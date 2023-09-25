@@ -32,10 +32,10 @@ resource "aws_iam_instance_profile" "main" {
 }
 
 resource "aws_instance" "main" {
-  count         = length(data.tfe_outputs.networking.nonsensitive_values.public_subnets)
+  count         = length(data.tfe_outputs.networking.nonsensitive_values.public_subnets_first_two)
   ami           = nonsensitive(data.aws_ssm_parameter.amzn2_linux.value)
   instance_type = var.instance_type
-  subnet_id     = data.tfe_outputs.networking.nonsensitive_values.public_subnets[count.index]
+  subnet_id     = data.tfe_outputs.networking.nonsensitive_values.public_subnets_first_two[count.index]
   vpc_security_group_ids = [
     aws_security_group.webapp_http_inbound_sg.id,
     aws_security_group.webapp_ssh_inbound_sg.id,
@@ -65,7 +65,7 @@ resource "aws_lb" "main" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.webapp_http_inbound_sg.id]
-  subnets            = data.tfe_outputs.networking.nonsensitive_values.public_subnets
+  subnets            = data.tfe_outputs.networking.nonsensitive_values.public_subnets_first_two
 
   enable_deletion_protection = false
 
